@@ -20,7 +20,7 @@ INSERT INTO users (id, created_at, updated_at, name )
     $3,
     $4
   )
-RETURNING id, created_at, updated_at, name
+RETURNING id, name, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -40,9 +40,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Name,
 	)
 	return i, err
 }
@@ -57,7 +57,7 @@ func (q *Queries) DeleteUsers(ctx context.Context) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, created_at, updated_at, name FROM users WHERE name = $1
+SELECT id, name, created_at, updated_at FROM users WHERE name = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, name string) (User, error) {
@@ -65,15 +65,15 @@ func (q *Queries) GetUser(ctx context.Context, name string) (User, error) {
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Name,
 	)
 	return i, err
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, created_at, updated_at, name FROM users
+SELECT id, name, created_at, updated_at FROM users
 `
 
 func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
@@ -87,9 +87,9 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 		var i User
 		if err := rows.Scan(
 			&i.ID,
+			&i.Name,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.Name,
 		); err != nil {
 			return nil, err
 		}
