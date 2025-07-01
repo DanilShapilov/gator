@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"os"
@@ -9,6 +10,16 @@ import (
 	"github.com/DanilShapilov/gator/internal/database"
 	_ "github.com/lib/pq"
 )
+
+func middlewareLoggedIn(handler func(s *state, cmd command, user database.User) error) func(*state, command) error {
+	return func(s *state, c command) error {
+		user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+		if err != nil {
+			return err
+		}
+		return handler(s, c, user)
+	}
+}
 
 type state struct {
 	db  *database.Queries
@@ -41,10 +52,10 @@ func main() {
 	cmds.register("reset", handlerReset)
 	cmds.register("users", handlerListUsers)
 	cmds.register("agg", handlerAgg)
-	cmds.register("addfeed", handlerAdd)
+	cmds.register("addfeed", middlewareLoggedIn(handlerAdd))
 	cmds.register("feeds", handlerListFeeds)
-	cmds.register("follow", handlerFollowFeed)
-	cmds.register("following", handlerListFeedFollows)
+	cmds.register("follow", middlewareLoggedIn(handlerFollowFeed))
+	cmds.register("following", middlewareLoggedIn(handlerListFeedFollows))
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")

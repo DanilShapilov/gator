@@ -8,12 +8,7 @@ import (
 	"github.com/DanilShapilov/gator/internal/database"
 )
 
-func handlerAdd(s *state, cmd command) error {
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return err
-	}
-
+func handlerAdd(s *state, cmd command, user database.User) error {
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("usage %s <name> <url>", cmd.Name)
 	}
@@ -37,10 +32,13 @@ func handlerAdd(s *state, cmd command) error {
 	fmt.Println()
 	fmt.Println("=====================================")
 
-	handlerFollowFeed(s, command{
-		Name: "follow",
-		Args: []string{feedURL},
-	})
+	handlerFollowFeed(
+		s,
+		command{
+			Name: "follow",
+			Args: []string{feedURL},
+		},
+		user)
 	return nil
 }
 
