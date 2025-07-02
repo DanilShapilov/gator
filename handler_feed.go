@@ -72,4 +72,5 @@ func printFeed(feed database.Feed, user database.User) {
 	fmt.Printf(" * User:     %v\n", user.Name)
 	fmt.Printf(" * Created:  %v\n", feed.CreatedAt)
 	fmt.Printf(" * Updated:  %v\n", feed.UpdatedAt)
+	fmt.Printf(" * LastFetchedAt:  %v\n", feed.LastFetchedAt)
 }

@@ -52,6 +52,7 @@ func main() {
 	cmds.register("reset", handlerReset)
 	cmds.register("users", handlerListUsers)
 	cmds.register("agg", handlerAgg)
+	cmds.register("browse", middlewareLoggedIn(handlerBrowse))
 	cmds.register("addfeed", middlewareLoggedIn(handlerAdd))
 	cmds.register("feeds", handlerListFeeds)
 	cmds.register("follow", middlewareLoggedIn(handlerFollowFeed))
